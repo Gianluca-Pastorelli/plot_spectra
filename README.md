@@ -1,7 +1,7 @@
 # plot_spectra Function
 
 ## Description  
-`plot_spectra` is an R function designed to import, normalize, and plot spectral data from multiple files in a folder. It supports multiple plotting modes (overlapped, stacked, or individual plots), flexible axis customization, and optional features like vertical lines, shaded regions, and annotations.
+`plot_spectra` is an R function designed to import, normalize and plot spectral data from multiple data files in a folder. It supports multiple plotting modes (individual, overlapped or stacked plots), flexible axis customization, and optional features like vertical lines, shaded regions and annotations.
 
 ## Requirements  
 - R packages: **tidyverse**, **RColorBrewer**
@@ -16,9 +16,9 @@ plot_spectra(
   sep = ",",                     # Field separator ("," or "\t")
   normalization = c("none", "simple", "min-max", "z-score"), # Normalization method for intensities
   x_limits = NULL,                # Numeric vector c(min, max) for x-axis limits
-  x_breaks = NULL,                # Numeric vector for x-axis tick positions
+  x_breaks = NULL,                # Numeric vector seq(min, max, by = step) for x-axis tick positions
   x_reverse = FALSE,              # Whether to reverse the x-axis
-  y_trans = c("identity", "log10", "sqrt"), # Transformation for y-axis scale
+  y_trans = c("identity", "log10", "sqrt"), # Transformation for y-axis scale ("identity" is default)
   x_label = "Wavelength (nm)",   # Label for x-axis (can be expression())
   y_label = "Intensity (a.u.)",  # Label for y-axis (can be expression())
   line_size = 0.5,                # Thickness of plot lines
@@ -31,11 +31,11 @@ plot_spectra(
 
 ## Details  
 - **Input Data:** Reads all files with specified extension in the folder.  
-- **Normalization:** Supports no normalization, simple scaling, min-max, and z-score normalization.  
+- **Normalization:** Supports no normalization, simple scaling, min-max and z-score normalization.  
 - **Plot Modes:**  
+  - `individual`: Separate plot for each spectrum saved individually.
   - `overlapped`: All spectra plotted on the same axes with different colors.  
-  - `stacked`: Each spectrum plotted in its own facet stacked vertically with free y-axis scales.  
-  - `individual`: Separate plot for each spectrum saved individually.  
+  - `stacked`: Each spectrum plotted in its own facet stacked vertically with free y-axis scales.    
 - **Axis Customization:** Supports x-axis limits, breaks, reversing; y-axis transformations (identity, log10, sqrt).  
 - **Extras:** Can add vertical reference lines, shaded regions of interest, and text annotations linked to each spectrum.  
 - **Output:** Saves plots as TIFF files in an `Outputs` folder created in the working directory.
