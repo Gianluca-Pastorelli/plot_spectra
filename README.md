@@ -28,6 +28,7 @@ plot_spectra(
   shaded_ROIs = NULL,             # List of numeric vectors c(xmin, xmax) for shaded regions
   annotations = NULL              # Data frame with columns: file, x, y, label for text annotations
 )
+```
 
 ## Details  
 - **Input Data:** Reads all files with specified extension in the folder.  
@@ -55,3 +56,4 @@ plot_spectra(
   shaded_ROIs = list(c(500, 550), c(600, 650)),
   annotations = data.frame(file = "sample1.csv", x = 480, y = 0.8, label = "Peak A")
 )
+```
