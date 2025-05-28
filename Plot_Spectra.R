@@ -15,11 +15,12 @@ plot_spectra <- function(
     x_limits = NULL, # Numeric vector of length 2 specifying axis limits, e.g. c(min, max)
     x_breaks = NULL, # Numeric vector of break positions, e.g. seq(min, max, by = step)
     x_reverse = FALSE,
-    y_trans = c("identity", "log10", "sqrt"), # Choose y-axis transformation: identity (default), log10, or sqrt
+    y_trans = c("linear", "log10", "sqrt"), # Choose y-axis transformation: linear (default), log10, or sqrt
     x_label = "Energy (keV)", # For complex formatting, use expression(), e.g. expression(Wavenumber~(cm^{-1}))
     y_label = "Counts/1000 s", # For complex formatting, use expression(), e.g. expression(Delta*E["00"]^{"*"}~(a.u.))
     line_size = 0.5,
-    plot_mode = c("overlapped", "stacked", "individual"),
+    palette = "black", # A single colour, or the ColorBrewer palette name "Dark2", or a custom vector
+    plot_mode = c("individual", "overlapped", "stacked"),  # Default is "individual"
     show_legend = FALSE,
     vertical_lines = NULL,  # A numeric vector of x positions where vertical dashed lines will be drawn
     shaded_ROIs = NULL, # A list of numeric vectors, each with two elements c(xmin, xmax), defining shaded rectangular regions along x
@@ -42,7 +43,9 @@ plot_spectra <- function(
       axis.text.y = element_text(color = "black", size = 10),
       axis.title.x = element_text(color = "black", size = 12),
       axis.title.y = element_text(color = "black", size = 12),
-      legend.position = if (show_legend) "right" else "none"
+      legend.position = if (show_legend) "right" else "none",
+      legend.title = element_blank(),
+      plot.margin = margin(0.2,0.5,0.2,0.2, "cm")
     )
   
   # In case, make use of other options for the theme:
@@ -50,8 +53,7 @@ plot_spectra <- function(
   # axis.line = element_line(colour = "black"),
   # panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5),
   # panel.background = element_blank(),
-  # legend.key = element_blank(),
-  # plot.margin = margin(0.2,0.5,0.2,0.2, "cm")
+  # legend.key = element_blank()
   
   # Read files
   files <- list.files(folder, pattern = paste0("\\.", file_type, "$"), full.names = TRUE)
@@ -84,11 +86,23 @@ plot_spectra <- function(
   
   if (!dir.exists("Outputs")) dir.create("Outputs")
   
+  # Determine color scale
+  n_files <- length(unique(spectra$file))
+  color_scale <- if (length(palette) == 1 && palette != "Dark2") {
+    scale_color_manual(values = rep(palette, n_files))
+  } else if (identical(palette, "Dark2")) {
+    scale_color_brewer(palette = "Dark2")
+  } else if (length(palette) > 1) {
+    scale_color_manual(values = rep(palette, length.out = n_files))
+  } else {
+    stop("Invalid `palette`. Use a single color, 'Dark2', or a custom vector.")
+  }
+  
   if (plot_mode == "individual") {
     for (file_name in unique(spectra$file)) {
       data_sub <- filter(spectra, file == !!file_name)
       p <- ggplot(data_sub, aes(x = x, y = y)) +
-        geom_line(linewidth = line_size, color = "black") +
+        geom_line(linewidth = line_size, color = if (length(palette) == 1 && palette != "Dark2") palette else "black") +
         labs(x = x_label, y = y_label, title = file_name) +
         plot_theme
       
@@ -100,7 +114,7 @@ plot_spectra <- function(
       }
       
       # y-axis scale
-      if (y_trans != "identity") {
+      if (y_trans != "linear") {
         p <- p + scale_y_continuous(trans = y_trans)
       }
       
@@ -136,7 +150,8 @@ plot_spectra <- function(
     p <- ggplot(spectra, aes(x = x, y = y, color = file)) +
       geom_line(linewidth = line_size) +
       labs(x = x_label, y = y_label, color = "File") +
-      plot_theme
+      plot_theme +
+      color_scale
     
     # x-axis scale
     if (x_reverse) {
@@ -146,13 +161,10 @@ plot_spectra <- function(
     }
     
     # y-axis scale
-    if (y_trans != "identity") {
+    if (y_trans != "linear") {
       p <- p + scale_y_continuous(trans = y_trans)
     }
     
-    if (plot_mode == "overlapped") {
-      p <- p + scale_color_brewer(palette = "Dark2")
-    }
     if (plot_mode == "stacked") {
       p <- p +
         facet_wrap(~ file, ncol = 1, scales = "free_y") +
@@ -161,9 +173,9 @@ plot_spectra <- function(
           axis.line = element_line(colour = "black", linewidth = 0.25),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
-          panel.spacing = unit(0, "mm"), # remove spacing between facets
-          strip.background = element_blank(), # remove gray title bars
-          strip.text = element_blank() # remove text in the facets
+          panel.spacing = unit(0, "mm"),            # Remove spacing between facets
+          strip.background = element_blank(),       # Remove gray title bars
+          strip.text = element_blank()              # Remove text in the facets
         )
     }
     if (!is.null(vertical_lines)) {
