@@ -48,12 +48,12 @@ plot_spectra(
   - `stacked`: Each spectrum plotted in its own facet stacked vertically with free y-axis scales.    
 - **Axis Customization:** Supports x-axis limits, breaks, reversing; y-axis transformations such as linear (default), log10, sqrt.
 - **Color Palette:**
-  - `palette` = "black" (default): All lines plotted in black (or one color).
-  - `palette` = "Dark2": Use the "Dark2" palette from RColorBrewer for multiple spectra.
-  - `palette` = c("red", "blue", ...): Custom vector of colors for files. 
+  - `palette = "black"` (default): All lines plotted in black (or one color).
+  - `palette = "Dark2"`: Use the "Dark2" palette from RColorBrewer for multiple spectra.
+  - `palette = c("red", "blue", ...)`: Custom vector of colors for files. 
 - **Extras:** Can add vertical reference lines, shaded regions of interest, and text annotations linked to each spectrum.  
 - **Output:**
-  - Saves plots in an `Outputs` folder created automatically in the working directory.
+  - Saves plots in an Outputs folder created automatically in the working directory.
   - `output_format` argument lets you specify the desired file format: "tiff" (default), "png", "pdf", etc.
   - Filenames include plot mode and current date for easy tracking.
 
