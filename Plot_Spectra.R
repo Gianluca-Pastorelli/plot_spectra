@@ -24,8 +24,9 @@ plot_spectra <- function(
     show_legend = FALSE,
     vertical_lines = NULL,  # A numeric vector of x positions where vertical dashed lines will be drawn
     shaded_ROIs = NULL, # A list of numeric vectors, each with two elements c(xmin, xmax), defining shaded rectangular regions along x
-    annotations = NULL # A data frame with columns 'file', 'x', 'y', 'label'; adds text annotations at specified points in each spectrum
-) {
+    annotations = NULL, # A data frame with columns 'file', 'x', 'y', 'label'; adds text annotations at specified points in each spectrum
+    output_format = "tiff" # Choose output file format ("tiff", "png", "pdf", etc.)
+    ) {
   normalization <- match.arg(normalization)
   plot_mode <- match.arg(plot_mode)
   y_trans <- match.arg(y_trans)
@@ -135,7 +136,7 @@ plot_spectra <- function(
       ggsave(
         filename = paste0(tools::file_path_sans_ext(file_name), "_", Sys.Date(), ".tiff"),
         plot = p,
-        device = "tiff",
+        device = output_format,
         path = "Outputs",
         scale = 1,
         width = 15,
@@ -191,7 +192,7 @@ plot_spectra <- function(
     ggsave(
       filename = paste0("Combined_Spectra_", Sys.Date(), ".tiff"),
       plot = p,
-      device = "tiff",
+      device = output_format,
       path = "Outputs",
       scale = 1,
       width = 15,
